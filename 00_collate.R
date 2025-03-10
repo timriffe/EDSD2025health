@@ -57,3 +57,4 @@ dat <-
   pivot_longer(HH:UD, names_to = "transition", values_to = "p") |>
   mutate(variant = "lifetable_adjusted",.before=1)
 write_csv(dat,"data/adj_transitions.csv.gz")
+
