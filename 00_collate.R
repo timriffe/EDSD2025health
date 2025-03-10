@@ -58,3 +58,24 @@ dat <-
   mutate(variant = "lifetable_adjusted",.before=1)
 write_csv(dat,"data/adj_transitions.csv.gz")
 
+# finally, get lifetables
+
+library(HMDHFDplus)
+
+mxm <-
+  readHMDweb("ESP","mltper_1x1",
+             username = Sys.getenv("us"),
+             password = Sys.getenv("pw")) |> 
+  select(time = Year, age=Age, mx) |> 
+  mutate(sex = "male", .before = 1) |> 
+  filter(time %in% c(2011, 2013,2015))
+mxf <-
+  readHMDweb("ESP","fltper_1x1",
+             username = Sys.getenv("us"),
+             password = Sys.getenv("pw")) |> 
+  select(time = Year,age=Age, mx) |> 
+  mutate(sex = "female", .before = 1) |> 
+  filter(time %in% c(2011, 2013,2015))
+
+mx <- bind_rows(mxm,mxf)
+write_csv(mx,"data/mx.csv.gz")
