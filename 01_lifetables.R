@@ -35,11 +35,6 @@ mx_to_qx <- function(mx, ax){
   return(qx)
 }
 
-mx |> 
-  group_by(sex, time) |> 
-  mutate(ax = mx_to_ax(mx, age, sex),
-         qx = mx_to_qx(mx, ax))
-
 # 3 use qx to get lx via px
 
 qx_to_lx <- function(qx){
@@ -47,9 +42,24 @@ qx_to_lx <- function(qx){
   lx <- c(1, lx[-length(lx)])
   lx
 }
-
-
 # 4 get Lx, lifetable exposure via dx
+
+dx_lx_to_Lx <- function(dx,lx,ax){
+  Lx <- lx - (1 - ax) * dx
+  n <- length(lx)
+  Lx[n] <- lx[n] * ax[n]
+  Lx
+}
+mx |> 
+  group_by(sex, time) |> 
+  mutate(ax = mx_to_ax(mx, age, sex),
+         qx = mx_to_qx(mx, ax),
+         lx = qx_to_lx(qx),
+         dx = lx * qx,
+         Lx = dx_lx_to_Lx(dx,lx,ax),
+         Tx = rev(Lx) |> cumsum() |> rev(),
+         ex = Tx / lx)
+
 
 # 5 get ex via Tx
 
