@@ -2,18 +2,39 @@
 
 library(tidyverse)
 # 1 read in data/prev.czv.gz using read_csv()
+prev <- read_csv("https://github.com/timriffe/EDSD2025health/raw/refs/heads/master/data/prev.csv.gz")
 
+head(prev)
 # 2 reshape so that states H and U are side-by-side, with values n
 # use pivot_wider() for this
-
 # 3 calculate prev as U / (U + H) using mutate()
+prev <-
+  prev |> 
+  pivot_wider(names_from = state, values_from = n) |> 
+  mutate(prev = U / (H + U))
 
 # 4 make some plots of prevalence, and some observations
 # would you maybe want to smooth this?
 # any odd features?
+prev |> 
+  filter(condition == "gali", time == 2015) |> 
+  ggplot(aes(x = age, y = prev, color = sex)) +
+  geom_point() +
+  geom_smooth() +
+  theme_minimal()
 
 # 5 make one or more plots of sex ratios in prevalence
 # what can be said about these?
+
+prev |> 
+  select(-H,-U) |> 
+  pivot_wider(names_from = sex, values_from = prev) |> 
+  mutate(ratio = female / male) |> 
+  filter(condition == "gali", time == 2015) |> 
+  ggplot(aes(x = age, y = ratio)) +
+  geom_point() +
+  geom_smooth() +
+  scale_y_log10()
 
 
 
