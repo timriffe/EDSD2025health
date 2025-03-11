@@ -24,8 +24,11 @@ u2U <- function(HH, HU, UH, UU){
 }
 
 # convert transient dynamics into outcomes: the fundamental matrix, N
-U2N <- function(U, interval = 1, dudel_discount = FALSE) {
+U2N <- function(U, 
+                interval = 1, 
+                dudel_discount = FALSE) {
   I   <- diag(nrow(U))
+  # solve() is matrix inverse in this usage
   Nsx <- solve(I - U) * interval
   dimnames(Nsx) <- dimnames(U)
   

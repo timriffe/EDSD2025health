@@ -61,6 +61,8 @@ N20 <-
   separate_wider_delim(cols = from, 
                        delim = "::", 
                        names = c("from","age1")) |> 
+  mutate(age1 = as.integer(age1),
+         age2 = as.integer(age2)) |> 
   dplyr::filter(age1 == 20,
                 age2 >= age1)
 N20
@@ -74,14 +76,23 @@ HLE <-
          Ex = Ex_cond * init) |> 
   group_by(to) |> 
   summarize(Ex = sum(Ex), .groups = "drop")
-HLE <-
-N20 |> 
+lxs <-
+  N20 |> 
   mutate(init = if_else(from == "H", init["H"], init["U"]),
          lxs = time * init) |> 
   group_by(to, age2) |> 
   summarize(lxs = sum(lxs))
-HLE$exs
+Hx2 <- 
+  lxs |> 
+  filter(to == "H") |> 
+  pull(lxs)
+
+HLE$Ex
+# compare w result from 07_ms_id.R, exact match
 c(sum(Hx),sum(Ux))
+
+
+
 # -------------------------------------------
 # Some extra code for weighting together
 # an average survival curve and prevalence,

@@ -5,7 +5,7 @@
 library(tidyverse) # install.packages("tidyverse")
 library(here)
 # some custom functions
-source("Functions.R")
+source("06_ms_util_functions.R")
 
 # Read in the data (Daniel Schneider gave these to me, haha)
 TR <- read_csv("data/adj_transitions.csv.gz")
@@ -84,7 +84,9 @@ HLT %>%
              y = Deaths, 
              color = `Health status`, 
              group = `Health status`)) +
-  geom_line()
+  geom_line() +
+  labs(color = "Health status\nat death",
+       title = "Think of why unhealthy deaths are\non average later")
 
 
 # a function that does this
