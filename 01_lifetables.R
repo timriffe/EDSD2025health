@@ -50,7 +50,9 @@ dx_lx_to_Lx <- function(dx,lx,ax){
   Lx[n] <- lx[n] * ax[n]
   Lx
 }
-mx |> 
+
+lifetables <-
+  mx |> 
   group_by(sex, time) |> 
   mutate(ax = mx_to_ax(mx, age, sex),
          qx = mx_to_qx(mx, ax),
@@ -60,9 +62,20 @@ mx |>
          Tx = rev(Lx) |> cumsum() |> rev(),
          ex = Tx / lx)
 
+write_csv(lifetables, "data/lifetables.csv.gz")
 
-# 5 get ex via Tx
+lifetables |> 
+  filter(age == 0) |> 
+  select(sex, time, ex) |> 
+  mutate(asdr = 1 / ex)
 
+
+lifetables |> 
+  filter(time == 2015, sex == "female") |> 
+  ggplot(aes(x = age, y = mx)) +
+  scale_y_log10() +
+  theme_minimal() +
+  geom_line()
 
 
 
