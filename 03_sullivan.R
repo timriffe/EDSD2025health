@@ -11,7 +11,8 @@
 # 1.1 smooth/graduate prevalence
 
 # 1.2 group lifetables to 2-year age groups (just need Lx, but sure to make lt start at 50!)
-
+source("01_lifetables.R")
+source("02_prevalence.R")
 
 lt_sullivan <-
   lifetables |> 
@@ -54,8 +55,20 @@ prev |>
 
 # https://doi.org/10.1353/dem.2004.0017
 
-
-
+prev |> 
+  left_join(lt_sullivan, by = join_by(sex, time, age)) |> 
+  filter(condition == "adl",
+         time == 2015) |> 
+  select(-H, -U) |> 
+  pivot_wider(names_from = sex, values_from =c(prev, Lx)) |> 
+  mutate(pd = (1-prev_female) - (1-prev_male),
+         pm = ((1-prev_female) + (1-prev_male)) / 2,
+         Ld = Lx_female - Lx_male,
+         Lm = (Lx_female + Lx_male) / 2,
+         DIS = pd * Lm,
+         MOR = Ld * pm) |> 
+  summarize(DIS = sum(DIS),
+            MOR = sum(MOR))
 
 
 
