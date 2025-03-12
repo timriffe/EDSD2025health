@@ -3,12 +3,12 @@
 # modified for our data
 
 library(tidyverse) # install.packages("tidyverse")
-library(here)
 # some custom functions
-source("06_ms_util_functions.R")
 
 # Read in the data (Daniel Schneider gave these to me, haha)
-TR <- read_csv("data/adj_transitions.csv.gz")
+# TR <- read_csv("data/adj_transitions.csv.gz")
+TR <- read_csv("https://github.com/timriffe/EDSD2025health/raw/refs/heads/master/data/adj_transitions.csv.gz")
+head(TR)
 
 # define a subset, reshape to wider along transitions
 TRsub <-
@@ -35,7 +35,7 @@ udx <- TRsub %>% pull(UD)
 hhx + hux + hdx ; uux + uhx + udx
 # decide on some starting conditions...
 init <- c(H=.99,U=.01)
-
+# init <- c(H=1,U=0)
 
 # Now start the calcs
 # Two containers
@@ -54,6 +54,8 @@ for (i in 1:n){
 }
 sum(Hx)
 sum(Ux)
+
+sum((Hx[-1] + Hx[-length(Hx)]) / 2)
 # add an age to close out
 ages <- 20:111 
 HLT <- data.frame(
@@ -67,6 +69,8 @@ HLT <- data.frame(
   uhx=c(uhx, 0),
   udx=c(udx, 1))
 
+
+HLT
 # Hx and Ux are now like denominators.
 # The other columns are directed transition probabilities
 # So you can calculate actual transitions as you please
